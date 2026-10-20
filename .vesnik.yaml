@@ -1,0 +1,14 @@
+provider: claude
+model: claude-haiku-5-5
+
+style:
+  product: "Secure Enclave SSH keys and Git signing for macOS, with a Home Manager module"
+
+breaking_bumps_minor: true
+max_bump: minor
+
+packages:
+  - path: .
+    files:
+      - file: package.nix
+        regex: 'version = "(?P<v>[^"]+)";'
