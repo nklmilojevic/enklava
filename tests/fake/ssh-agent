@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+sleep 300 </dev/null >/dev/null 2>&1 &
+echo $! >"$FAKE_STATE/agent.pid"
+export SSH_AUTH_SOCK=$FAKE_STATE/agent.sock SSH_AGENT_PID=$!
+rm -f "$SSH_AUTH_SOCK.loaded"
+"$@"

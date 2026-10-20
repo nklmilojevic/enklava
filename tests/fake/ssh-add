@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+. "$(dirname "$0")/lib.sh"
+
+case $1 in
+  -K) touch "$SSH_AUTH_SOCK.loaded" ;;
+  -L)
+    if [ ! -e "$SSH_AUTH_SOCK.loaded" ]; then
+      echo "The agent has no identities."
+      exit 1
+    fi
+    while IFS=$'\t' read -r label _; do public_line_of "$label"; done <"$db"
+    ;;
+  *) exit 64 ;;
+esac

@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+. "$(dirname "$0")/lib.sh"
+
+case $1 in
+  -lf)
+    read -r _ body _ <"$2"
+    case $body in
+      AAAA*) ;;
+      *) echo "$2 is not a public key file." >&2; exit 255 ;;
+    esac
+    hex=${body#AAAA}
+    echo "256 SHA256:${hex:0:43} ssh: (ECDSA-SK)"
+    ;;
+  -w)
+    echo "${KEYCHAIN_CERTIFICATES:-}" >>"$FAKE_STATE/download.log"
+    [ -z "${FAKE_NO_STUB:-}" ] || exit 1
+    while IFS=$'\t' read -r label _; do
+      if [ -n "${KEYCHAIN_CERTIFICATES:-}" ] && [ "$KEYCHAIN_CERTIFICATES" != "$(keychain_hash_of "$label")" ]; then
+        continue
+      fi
+      name="id_ecdsa_sk_rk_${label// /_}"
+      printf 'fake stub for %s\n' "$label" >"$name"
+      public_line_of "$label" >"$name.pub"
+    done <"$db"
+    ;;
+  -Y)
+    echo "provider=${SSH_SK_PROVIDER:-} agent=${SSH_AUTH_SOCK:-} loaded=$([ -e "${SSH_AUTH_SOCK:-/nonexistent}.loaded" ] && echo yes || echo no) args=$*" >>"$FAKE_STATE/sign.log"
+    ;;
+  *) exit 64 ;;
+esac

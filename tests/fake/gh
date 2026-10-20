@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+case "$1 ${2:-}" in
+  "api --paginate")
+    case $3 in
+      /user/keys) file=$FAKE_STATE/gh-authentication ;;
+      /user/ssh_signing_keys) file=$FAKE_STATE/gh-signing ;;
+      *) exit 1 ;;
+    esac
+    [ ! -e "$file" ] || cat "$file"
+    ;;
+  "ssh-key add")
+    file=$3 type="" title=""
+    shift 3
+    while [ $# -gt 0 ]; do
+      case $1 in
+        --type) type=$2; shift 2 ;;
+        --title) title=$2; shift 2 ;;
+        *) shift ;;
+      esac
+    done
+    cut -d' ' -f1,2 "$file" >>"$FAKE_STATE/gh-$type"
+    echo "$type $title" >>"$FAKE_STATE/gh.log"
+    ;;
+  *) exit 64 ;;
+esac

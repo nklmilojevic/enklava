@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+cat >"$FAKE_STATE/clipboard"

@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -euo pipefail
+. "$(dirname "$0")/lib.sh"
+echo "$*" >>"$FAKE_STATE/sc_auth.log"
+
+case $1 in
+  list-ctk-identities)
+    encoding=b64
+    while [ $# -gt 0 ]; do
+      case $1 in
+        -e) encoding=$2; shift 2 ;;
+        *) shift ;;
+      esac
+    done
+    width=6
+    while IFS=$'\t' read -r label _; do
+      [ ${#label} -lt "$width" ] || width=$((${#label} + 1))
+    done <"$db"
+    hash_width=$([ "$encoding" = hex ] && echo 65 || echo 51)
+    row() { printf "%-9s%-${hash_width}s%-5s%-${width}s%-${width}s%-14s%-21s%-6s\n" "$@"; }
+    row "Key Type" "Public Key Hash" Prot Label "Common Name" "Email Address" "Valid To" Valid
+    while IFS=$'\t' read -r label protection; do
+      if [ "$encoding" = hex ]; then hash=$(keychain_hash_of "$label"); else hash=$(ssh_hash_of "$label"); fi
+      row p-256-ne "$hash" "$protection" "$label" "$label" "" "20. 10. 2027., 14:17" YES
+    done <"$db"
+    ;;
+  create-ctk-identity)
+    label="" protection=""
+    while [ $# -gt 0 ]; do
+      case $1 in
+        -l) label=$2; shift 2 ;;
+        -t) protection=$2; shift 2 ;;
+        *) shift ;;
+      esac
+    done
+    printf '%s\t%s\n' "$label" "$protection" >>"$db"
+    ;;
+  *) exit 64 ;;
+esac
