@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.1.1 - 2026-10-20
+
+This release gives maintainers working Go dependency updates from Renovate. Dependency pull requests no longer need a manual hash fix.
+
+### Fixes
+
+- Renovate Go pull requests now update `vendorHash` in `package.nix` automatically. The workflow also reports a failed `nix build` as a failure, so stale hashes get fixed.
+
+### Other changes
+
+- Renovate now runs on this repository. It checks for dependency updates every hour.
+
 ## v0.1.0 - 2026-10-20
 
 This first release gives you `enklava`, a CLI for Secure Enclave SSH keys and Git commit signatures on macOS. It also gives you a Home Manager module for SSH identities and Git commit signatures.
