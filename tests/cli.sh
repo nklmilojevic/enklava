@@ -14,6 +14,7 @@ export ENKLAVA_SSH_AGENT=$fake/ssh-agent
 export ENKLAVA_PBCOPY=$fake/pbcopy
 export ENKLAVA_SCUTIL=$fake/scutil
 export ENKLAVA_GH=$fake/gh
+unset SSH_AUTH_SOCK SSH_AGENT_PID
 
 reset() {
   root=$(mktemp -d)

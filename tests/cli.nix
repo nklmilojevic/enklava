@@ -3,7 +3,6 @@
   enklava,
   bash,
   coreutils,
-  gawk,
   gnugrep,
 }:
 
@@ -12,7 +11,6 @@ runCommand "enklava-cli-tests"
     nativeBuildInputs = [
       bash
       coreutils
-      gawk
       gnugrep
     ];
   }

@@ -16,3 +16,4 @@ jobs:
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
       - run: nix flake check -L
       - run: nix fmt -- --check $(git ls-files '*.nix')
+      - run: nix develop --command goreleaser check
