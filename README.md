@@ -10,6 +10,13 @@ and its `.pub`.
 
 Needs macOS 26 or later.
 
+## Install
+
+With Nix, use the Home Manager module below or `nix profile install
+github:nklmilojevic/enklava`. Without Nix, download the archive for your Mac
+from [Releases](https://github.com/nklmilojevic/enklava/releases), then put
+`enklava` and `enklava-sign` on your `PATH`.
+
 ## Home Manager
 
 ```nix
@@ -89,8 +96,15 @@ Removing an identity is left to `sc_auth delete-ctk-identity -h <hash>`.
 ## Development
 
 ```sh
-nix flake check   # shellcheck, CLI tests against fake Apple tools, module tests
+nix develop       # go, gopls, goreleaser
+go test ./...
+nix flake check   # Go tests, CLI tests against fake Apple tools, module tests, gofmt
 nix fmt -- $(git ls-files '*.nix')
 ```
+
+Publishing a GitHub release (`gh release create vX.Y.Z --generate-notes`)
+attaches the macOS binaries. They are signed and notarized when the
+`MACOS_SIGN_P12`, `MACOS_SIGN_PASSWORD`, `MACOS_NOTARY_ISSUER_ID`,
+`MACOS_NOTARY_KEY_ID` and `MACOS_NOTARY_KEY` secrets are set.
 
 Inspired by [ryoppippi/nix-secure-enclave-key](https://github.com/ryoppippi/nix-secure-enclave-key).

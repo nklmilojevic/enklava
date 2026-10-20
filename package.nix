@@ -1,34 +1,29 @@
 {
   lib,
-  symlinkJoin,
-  writeShellApplication,
-  coreutils,
-  gawk,
-  gnugrep,
-  gnused,
+  buildGoModule,
 }:
 
-let
+buildGoModule (finalAttrs: {
+  pname = "enklava";
   version = "0.1.0";
-  script =
-    name:
-    writeShellApplication {
-      inherit name;
-      runtimeInputs = [
-        coreutils
-        gawk
-        gnugrep
-        gnused
-      ];
-      text = builtins.readFile ./src/${name}.sh;
-    };
-in
-symlinkJoin {
-  name = "enklava-${version}";
-  inherit version;
-  paths = [
-    (script "enklava")
-    (script "enklava-sign")
+
+  src = lib.fileset.toSource {
+    root = ./.;
+    fileset = lib.fileset.unions [
+      ./go.mod
+      ./go.sum
+      ./cmd
+      ./internal
+    ];
+  };
+
+  vendorHash = "sha256-7K17JaXFsjf163g5PXCb5ng2gYdotnZ2IDKk8KFjNj0=";
+
+  env.CGO_ENABLED = 0;
+  ldflags = [
+    "-s"
+    "-w"
+    "-X github.com/nklmilojevic/enklava/internal/cli.Version=${finalAttrs.version}"
   ];
 
   meta = {
@@ -38,4 +33,4 @@ symlinkJoin {
     mainProgram = "enklava";
     platforms = lib.platforms.darwin;
   };
-}
+})
