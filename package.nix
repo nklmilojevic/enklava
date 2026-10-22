@@ -1,6 +1,8 @@
 {
   lib,
+  stdenv,
   buildGoModule,
+  installShellFiles,
 }:
 
 buildGoModule (finalAttrs: {
@@ -25,6 +27,15 @@ buildGoModule (finalAttrs: {
     "-w"
     "-X github.com/nklmilojevic/enklava/internal/cli.Version=${finalAttrs.version}"
   ];
+
+  nativeBuildInputs = [ installShellFiles ];
+
+  postInstall = lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
+    installShellCompletion --cmd enklava \
+      --bash <($out/bin/enklava completion bash) \
+      --fish <($out/bin/enklava completion fish) \
+      --zsh <($out/bin/enklava completion zsh)
+  '';
 
   meta = {
     description = "Secure Enclave SSH keys and Git signing for macOS";
